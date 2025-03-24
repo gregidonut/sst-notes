@@ -6,4 +6,15 @@
 
     background: #44475a;
     width: 100%;
+
+    position: relative;
+    padding: 1rem;
+}
+
+.header h1 {
+    position: absolute;
+}
+
+.header nav {
+    margin-left: auto;
 }

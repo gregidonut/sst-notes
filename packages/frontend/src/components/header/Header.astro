@@ -1,7 +1,23 @@
 ---
+import { SignedIn, UserButton } from "@clerk/astro/components";
 import styles from "./header.module.css";
+
+console.log(import.meta.env.CLERK_SIGN_IN_URL);
 ---
 
 <header class={styles.header}>
-    <a href="/">pakyu</a>
+    <h1>
+        <a href="/">pakyu</a>
+    </h1>
+    <nav>
+        <SignedIn>
+            <UserButton />
+        </SignedIn>
+    </nav>
 </header>
+
+<script>
+    document.getElementById("sign-in-button")!.addEventListener("click", () => {
+        window.location.href = "/sign-in";
+    });
+</script>
