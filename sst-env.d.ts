@@ -9,6 +9,9 @@ declare module "sst" {
       "type": "sst.aws.ApiGatewayV2"
       "url": string
     }
+    "Frontend": {
+      "type": "sst.aws.Astro"
+    }
     "Notes": {
       "name": string
       "type": "sst.aws.Dynamo"
