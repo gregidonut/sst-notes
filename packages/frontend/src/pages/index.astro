@@ -2,9 +2,27 @@
 import Layout from "../layouts/Layout.astro";
 import Header from "../components/header/Header.astro";
 import Main from "../components/main/Main.astro";
+
+const { getToken } = Astro.locals.auth();
+const token = await getToken();
+
+const ASTRO_API_URL = process.env.ASTRO_API_URL as string;
+try {
+    const resp = await fetch(`${ASTRO_API_URL}/notes`, {
+        method: "GET",
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+
+    const data = await resp.json();
+    console.log("~data from endpoint:", JSON.stringify(data));
+} catch (e) {
+    console.error(e);
+}
 ---
 
 <Layout>
     <Header />
-    <Main />
+    <Main>hello</Main>
 </Layout>

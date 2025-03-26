@@ -9,6 +9,22 @@ declare module "sst" {
       "type": "sst.aws.ApiGatewayV2"
       "url": string
     }
+    "ClerkDevAccountDefaultEndpoint": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "ClerkJWTAuthorizer": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "ClerkPublicKey": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "ClerkSecretKey": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
     "Frontend": {
       "type": "sst.aws.Astro"
     }

@@ -3,14 +3,18 @@ import { bucket } from "./storage";
 
 const region = aws.getRegionOutput().name;
 
+const clerkPublic = new sst.Secret("ClerkPublicKey");
+const clerkSecret = new sst.Secret("ClerkSecretKey");
+
 export const frontend = new sst.aws.Astro("Frontend", {
   path: "packages/frontend",
+  link: [clerkPublic, clerkSecret],
   environment: {
     ASTRO_REGION: region,
     ASTRO_API_URL: api.url,
     ASTRO_BUCKET: bucket.name,
-    // VITE_USER_POOL_ID: userPool.id,
-    // VITE_IDENTITY_POOL_ID: identityPool.id,
-    // VITE_USER_POOL_CLIENT_ID: userPoolClient.id,
+    PUBLIC_CLERK_PUBLISHABLE_KEY: clerkPublic.value,
+    CLERK_SECRET_KEY: clerkSecret.value,
+    CLERK_SIGN_IN_URL: "/sign-in",
   },
 });

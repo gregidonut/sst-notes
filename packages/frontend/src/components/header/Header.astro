@@ -1,8 +1,6 @@
 ---
 import { SignedIn, UserButton } from "@clerk/astro/components";
 import styles from "./header.module.css";
-
-console.log(import.meta.env.CLERK_SIGN_IN_URL);
 ---
 
 <header class={styles.header}>
@@ -15,9 +13,3 @@ console.log(import.meta.env.CLERK_SIGN_IN_URL);
         </SignedIn>
     </nav>
 </header>
-
-<script>
-    document.getElementById("sign-in-button")!.addEventListener("click", () => {
-        window.location.href = "/sign-in";
-    });
-</script>
