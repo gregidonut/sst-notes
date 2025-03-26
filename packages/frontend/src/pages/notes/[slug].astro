@@ -23,9 +23,25 @@ try {
 } catch (e) {
     console.error(e);
 }
+
+const pages = data!.map(function (d: Note) {
+    return {
+        ...d,
+        slug: d.noteId,
+    };
+});
+
+const { slug } = Astro.params;
+const page = pages.find((page) => page.slug === slug);
+if (!page) return Astro.redirect("/404");
 ---
 
 <Layout>
     <Header />
-    <Main />
+    <Main
+        ><section>
+            <header><p>date: {page.createdAt}</p></header>
+            <main><p>{page.content}</p></main>
+        </section></Main
+    >
 </Layout>

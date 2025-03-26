@@ -1,0 +1,60 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/header/Header.astro";
+import Main from "@/components/main/Main.astro";
+
+import { Note } from "@/models";
+
+const { getToken } = Astro.locals.auth();
+const token = await getToken();
+
+const ASTRO_API_URL = process.env.ASTRO_API_URL as string;
+let data: Array<Note>;
+try {
+    const resp = await fetch(`${ASTRO_API_URL}/notes`, {
+        method: "GET",
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+
+    data = await resp.json();
+    console.log("~data from endpoint:", JSON.stringify(data));
+} catch (e) {
+    console.error(e);
+}
+---
+
+<Layout>
+    <Header />
+    <Main
+        ><section>
+            <ol>
+                {
+                    data!.map(function (d: Note) {
+                        return (
+                            <li>
+                                <article>
+                                    <header>
+                                        <p>
+                                            {d.userId}{" "}
+                                            <a href={`/notes/${d.noteId}`}>
+                                                {d.noteId}
+                                            </a>
+                                        </p>
+                                    </header>
+                                    <main>
+                                        <p>date: {d.createdAt}</p>
+                                        <p>attached: {d.attachment}</p>
+                                        <h4>~content:</h4>
+                                        <p>{d.content}</p>
+                                    </main>
+                                </article>
+                            </li>
+                        );
+                    })
+                }
+            </ol>
+        </section></Main
+    >
+</Layout>

@@ -7,9 +7,15 @@ import styles from "./header.module.css";
     <h1>
         <a href="/">pakyu</a>
     </h1>
+
     <nav>
-        <SignedIn>
-            <UserButton />
-        </SignedIn>
+        <ul>
+            <li><a href="/notes">notes</a></li>
+            <li>
+                <SignedIn>
+                    <UserButton />
+                </SignedIn>
+            </li>
+        </ul>
     </nav>
 </header>
