@@ -59,7 +59,6 @@ func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 		return events.APIGatewayProxyResponse{StatusCode: 500, Body: fmt.Sprintf("Error retrieving item: %v", err)}, nil
 	}
 
-	fmt.Printf("~deleted result:%#v\n", result)
 	if result.Attributes == nil {
 		return events.APIGatewayProxyResponse{StatusCode: 404, Body: "Item not found"}, nil
 	}

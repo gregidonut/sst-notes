@@ -27,7 +27,6 @@ declare module "sst" {
     }
     "Frontend": {
       "type": "sst.aws.Astro"
-      "url": string
     }
     "Notes": {
       "name": string

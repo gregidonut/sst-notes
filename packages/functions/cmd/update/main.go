@@ -14,7 +14,6 @@ import (
 	"github.com/gregidonut/sst-notes/packages/functions/cmd/list/db"
 	"log"
 	"os"
-	"time"
 )
 
 var dynamoDbClient *dynamodb.Client
@@ -43,23 +42,31 @@ func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 		NoteId:     noteID,
 		Content:    requestBody.Content,
 		Attachment: requestBody.Attachment,
-		CreatedAt:  time.Now().String(),
 	}
 
 	item, err := attributevalue.MarshalMap(note)
 	if err != nil {
+
 		return events.APIGatewayProxyResponse{StatusCode: 500, Body: "Error creating note"}, nil
 	}
 
-	params := &dynamodb.UpdateItemInput{
-		TableName: aws.String(tableName),
-		Key: map[string]types.AttributeValue{
-			"userId": &types.AttributeValueMemberS{Value: note.UserId},
-			"noteId": &types.AttributeValueMemberS{Value: note.NoteId}, // Assuming NoteId is a string
-		},
+	updateExpression := "SET content = :content, attachment = :attachment"
 
-		UpdateExpression:          aws.String("SET content = :content, attachment = :attachment"),
-		ExpressionAttributeValues: item,
+	expressionValues := map[string]types.AttributeValue{
+		":content":    item["content"],
+		":attachment": item["attachment"],
+	}
+
+	key := map[string]types.AttributeValue{
+		"userId": item["userId"],
+		"noteId": item["noteId"],
+	}
+
+	params := &dynamodb.UpdateItemInput{
+		TableName:                 aws.String(tableName),
+		Key:                       key,
+		UpdateExpression:          aws.String(updateExpression),
+		ExpressionAttributeValues: expressionValues,
 	}
 
 	result, err := dynamoDbClient.UpdateItem(ctx, params)
@@ -68,7 +75,6 @@ func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 		return events.APIGatewayProxyResponse{StatusCode: 500, Body: fmt.Sprintf("Error retrieving item: %v", err)}, nil
 	}
 
-	fmt.Printf("~update result:%#v\n", result)
 	if result.Attributes == nil {
 		return events.APIGatewayProxyResponse{StatusCode: 404, Body: "Item not found"}, nil
 	}
