@@ -39,8 +39,89 @@ if (!page) return Astro.redirect("/404");
     <Header />
     <Main
         ><section>
-            <header><p>date: {page.createdAt}</p></header>
-            <main><p>{page.content}</p></main>
+            <header>
+                <p>
+                    date: {page.createdAt}
+                    <a update-link href={`/notes/${page.noteId}`}>update</a>
+                </p>
+            </header>
+            <main><p id="contentElem">{page.content}</p></main>
         </section></Main
     >
 </Layout>
+
+<script>
+    const updateLink = document.querySelector(
+        "[update-link]",
+    )! as HTMLAnchorElement;
+    const contentElem = document.querySelector(
+        "#contentElem",
+    )! as HTMLParagraphElement;
+    const main = contentElem.parentElement!;
+
+    const observeFormInsertion = () => {
+        const targetNode = main;
+
+        const config = {
+            childList: true,
+            subtree: true,
+        };
+
+        const callback: MutationCallback = function (mutationsList, observer) {
+            for (const mutation of mutationsList) {
+                if (mutation.type === "childList") {
+                    mutation.addedNodes.forEach(function (node) {
+                        if (
+                            !(
+                                node instanceof HTMLElement &&
+                                node.hasAttribute("update-form")
+                            )
+                        ) {
+                            return;
+                        }
+                        const form = node as HTMLFormElement;
+                        form.addEventListener("submit", async function (event) {
+                            event.preventDefault();
+
+                            const contentInput = form.querySelector(
+                                "#content",
+                            ) as HTMLInputElement;
+                            const newContent = contentInput.value;
+
+                            console.log("Updating content to:", newContent);
+                            const url = (form.action as string).split("/");
+                            const uuid = url[url.length - 1];
+                            const formData = new FormData(
+                                form as HTMLFormElement,
+                            );
+                            const resp = await fetch(`/api/update/${uuid}`, {
+                                method: "PUT",
+                                body: formData,
+                            });
+
+                            if (resp.ok) {
+                                window.location.href = `/notes/${uuid}`;
+                            }
+                        });
+                    });
+                }
+            }
+        };
+
+        const observer = new MutationObserver(callback);
+        observer.observe(targetNode, config);
+
+        return observer;
+    };
+
+    observeFormInsertion();
+
+    updateLink.addEventListener("click", function (event) {
+        event.preventDefault();
+        main.innerHTML = `<form update-form action="${updateLink.href}" method="PUT">
+        <label for="content">new content</label>
+        <input type="text" id="content" name="content" value="${contentElem.innerText}">
+        <input type="submit" >;
+        </form>`;
+    });
+</script>

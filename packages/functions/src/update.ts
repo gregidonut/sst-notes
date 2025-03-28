@@ -24,7 +24,7 @@ export const main = Util.handler(async (event) => {
       ":content": data.content || null,
     },
   };
-
+  console.log("~updateParams:", JSON.stringify(params));
   await dynamoDb.send(new UpdateCommand(params));
 
   return JSON.stringify({ status: true });
