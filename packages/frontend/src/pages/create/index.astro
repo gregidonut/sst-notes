@@ -1,0 +1,18 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/header/Header.astro";
+import Main from "@/components/main/Main.astro";
+---
+
+<Layout>
+    <Header />
+    <Main
+        ><form action={`/api/create`} method="POST">
+            <label for="content">content</label>
+            <input type="text" id="content" name="content" required />
+            <label for="attachment">attachment</label>
+            <input type="text" id="attachment" name="attachment" />
+            <button type="submit">submit</button>
+        </form></Main
+    >
+</Layout>

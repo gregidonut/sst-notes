@@ -8,7 +8,7 @@ const dynamoDb = DynamoDBDocumentClient.from(new DynamoDBClient({}));
 export const main = Util.handler(async (event) => {
   const data = JSON.parse(event.body || "{}");
 
-  console.log("~hello:");
+  console.log("~notes:");
   const params = {
     TableName: Resource.Notes.name,
     Key: {
@@ -29,3 +29,4 @@ export const main = Util.handler(async (event) => {
 
   return JSON.stringify({ status: true });
 });
+//

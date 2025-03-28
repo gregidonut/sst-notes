@@ -8,14 +8,15 @@ import styles from "./header.module.css";
         <a href="/">pakyu</a>
     </h1>
 
-    <nav>
-        <ul>
-            <li><a href="/notes">notes</a></li>
-            <li>
-                <SignedIn>
+    <SignedIn>
+        <nav>
+            <ul>
+                <li><a href="/notes">notes</a></li>
+                <li><a href="/create">create_</a></li>
+                <li>
                     <UserButton />
-                </SignedIn>
-            </li>
-        </ul>
-    </nav>
+                </li>
+            </ul>
+        </nav>
+    </SignedIn>
 </header>

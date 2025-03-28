@@ -1,0 +1,27 @@
+---
+interface Props {
+    href: string;
+}
+const { href } = Astro.props as Props;
+---
+
+<a delete-link href={href}> delete </a>
+
+<script>
+    const deleteLinks = document.querySelectorAll(
+        "[delete-link]",
+    )! as NodeListOf<HTMLAnchorElement>;
+    for (const dl of deleteLinks) {
+        dl.addEventListener("click", async function (event) {
+            event.preventDefault(); // Prevent default form submission
+            const href = (dl.href as string).split("/");
+            const uuid = href[href.length - 1];
+            const resp = await fetch(`/api/delete/${uuid}`, {
+                method: "DELETE",
+            });
+            if (resp.ok) {
+                window.location.href = "/notes";
+            }
+        });
+    }
+</script>
