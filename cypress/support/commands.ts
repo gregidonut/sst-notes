@@ -38,5 +38,19 @@
 
 import { addClerkCommands } from "@clerk/testing/cypress";
 addClerkCommands({ Cypress, cy });
-export {};
 
+import { setupClerkTestingToken } from "@clerk/testing/cypress";
+Cypress.Commands.add("signInAsUser", () => {
+  setupClerkTestingToken();
+
+  cy.viewport("iphone-6");
+  cy.visit("/sign-in");
+  // Add any other actions to test
+  cy.clerkSignIn({
+    strategy: "password",
+    identifier: Cypress.env("test_user"),
+    password: Cypress.env("test_password"),
+  });
+});
+
+export {};
