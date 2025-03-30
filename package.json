@@ -10,6 +10,8 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "@clerk/testing": "^1.4.33",
+    "cypress": "^14.2.1",
     "sst": "^3"
   }
 }

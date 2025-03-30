@@ -1,5 +1,7 @@
 ---
 import { SignedIn, UserButton } from "@clerk/astro/components";
+
+import { cy } from "@/utils";
 import styles from "./header.module.css";
 ---
 
@@ -9,7 +11,7 @@ import styles from "./header.module.css";
     </h1>
 
     <SignedIn>
-        <nav>
+        <nav {...cy("nav")}>
             <ul>
                 <li><a href="/notes">notes</a></li>
                 <li><a href="/create">create_</a></li>

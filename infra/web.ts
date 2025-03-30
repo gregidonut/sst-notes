@@ -5,11 +5,12 @@ const region = aws.getRegionOutput().name;
 
 const clerkPublic = new sst.Secret("ClerkPublicKey");
 const clerkSecret = new sst.Secret("ClerkSecretKey");
-
+const stage = process.env.SST_STAGE;
 export const frontend = new sst.aws.Astro("Frontend", {
   path: "packages/frontend",
   link: [clerkPublic, clerkSecret],
   environment: {
+    ASTRO_STAGE: stage,
     ASTRO_REGION: region,
     ASTRO_API_URL: api.url,
     ASTRO_BUCKET: bucket.name,
