@@ -4,7 +4,7 @@ import Header from "@/components/header/Header.astro";
 import Main from "@/components/main/Main.astro";
 
 import { Note } from "src/utils/models";
-import DeleteLink from "@/components/apiCompo/deleteLink/DeleteLink.astro";
+import NoteList from "@/components/apiCompo/noteList/NoteList.astro";
 
 const { getToken } = Astro.locals.auth();
 const token = await getToken();
@@ -29,35 +29,7 @@ try {
     <Header />
     <Main
         ><section>
-            <ol>
-                {
-                    data!.map(function (d: Note) {
-                        return (
-                            <li>
-                                <article>
-                                    <header>
-                                        <p>
-                                            <DeleteLink
-                                                href={`/notes/${d.noteId}`}
-                                            />{" "}
-                                            {d.userId}{" "}
-                                            <a href={`/notes/${d.noteId}`}>
-                                                {d.noteId}
-                                            </a>
-                                        </p>
-                                    </header>
-                                    <main>
-                                        <p>date: {d.createdAt}</p>
-                                        <p>attached: {d.attachment}</p>
-                                        <h4>~content:</h4>
-                                        <p>{d.content}</p>
-                                    </main>
-                                </article>
-                            </li>
-                        );
-                    })
-                }
-            </ol>
+            <NoteList data={data} />
         </section></Main
     >
 </Layout>

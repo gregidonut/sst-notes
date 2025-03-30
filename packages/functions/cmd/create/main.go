@@ -4,9 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"os"
 	"time"
+
+	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -44,7 +45,7 @@ func handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.A
 		NoteId:     uuid.New().String(),
 		Content:    requestBody.Content,
 		Attachment: requestBody.Attachment,
-		CreatedAt:  time.Now().String(),
+		CreatedAt:  time.Now().Format(time.RFC3339Nano),
 	}
 
 	item, err := attributevalue.MarshalMap(note)
@@ -56,7 +57,6 @@ func handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.A
 		TableName: aws.String(tableName),
 		Item:      item,
 	})
-
 	if err != nil {
 		return events.APIGatewayProxyResponse{StatusCode: 500, Body: "Error saving note to database"}, nil
 	}

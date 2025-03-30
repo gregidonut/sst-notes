@@ -1,0 +1,6 @@
+.content {
+    width: min-content;
+    padding: 1rem;
+
+    border: 0.1rem dashed #44475a;
+}

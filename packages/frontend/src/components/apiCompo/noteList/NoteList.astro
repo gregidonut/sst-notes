@@ -1,0 +1,43 @@
+---
+import { Note } from "src/utils/models";
+import DeleteLink from "@/components/apiCompo/deleteLink/DeleteLink.astro";
+import { cy } from "@/utils";
+import styles from "./noteList.module.css";
+
+interface Props {
+    data: Array<Note>;
+}
+const { data } = Astro.props;
+---
+
+<ol {...cy("note-list-ol")}>
+    {
+        data!.map(function (d: Note) {
+            return (
+                <li>
+                    <article>
+                        <header>
+                            <p>
+                                <DeleteLink href={`/notes/${d.noteId}`} />{" "}
+                                {d.userId}{" "}
+                                <a href={`/notes/${d.noteId}`}>{d.noteId}</a>
+                            </p>
+                        </header>
+                        <main>
+                            <p>
+                                date:{" "}
+                                {new Date(d.createdAt).toLocaleDateString()}
+                                {new Date(d.createdAt).toLocaleTimeString()}
+                            </p>
+                            <p>attached: {d.attachment}</p>
+                            <div class={styles.content}>
+                                <h4>~content:</h4>
+                                <p>{d.content}</p>
+                            </div>
+                        </main>
+                    </article>
+                </li>
+            );
+        })
+    }
+</ol>
