@@ -49,6 +49,14 @@ addProtectedGoRoute(
   "packages/functions/cmd/delete/main.go",
 );
 addProtectedGoRoute("PUT /notes/{id}", "packages/functions/cmd/update/main.go");
+addProtectedGoRoute(
+  "POST /seedNotes",
+  "packages/functions/cmd/testing/seed/main.go",
+);
+addProtectedGoRoute(
+  "DELETE /emptyDB",
+  "packages/functions/cmd/testing/empty/main.go",
+);
 
 function addProtectedGoRoute(rawRoute: string, handler: string): void {
   api.route(

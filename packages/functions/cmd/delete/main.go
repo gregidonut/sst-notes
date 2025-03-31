@@ -40,16 +40,11 @@ func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 
 	fmt.Printf("~noteID:%#v\n", note)
 
-	//item, err := attributevalue.MarshalMap(note)
-	//if err != nil {
-	//	return events.APIGatewayProxyResponse{StatusCode: 500, Body: "Error creating note"}, nil
-	//}
-
 	params := &dynamodb.DeleteItemInput{
 		TableName: aws.String(tableName),
 		Key: map[string]types.AttributeValue{
 			"userId": &types.AttributeValueMemberS{Value: note.UserId},
-			"noteId": &types.AttributeValueMemberS{Value: note.NoteId}, // Assuming NoteId is a string
+			"noteId": &types.AttributeValueMemberS{Value: note.NoteId},
 		},
 	}
 

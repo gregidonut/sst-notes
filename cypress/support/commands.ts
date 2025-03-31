@@ -45,11 +45,15 @@ Cypress.Commands.add("signInAsUser", () => {
 
   cy.viewport("iphone-6");
   cy.visit("/sign-in");
-  // Add any other actions to test
   cy.clerkSignIn({
     strategy: "password",
     identifier: Cypress.env("test_user"),
     password: Cypress.env("test_password"),
+  });
+  cy.window().then((window) => {
+    window.Clerk.session.getToken().then((token) => {
+      cy.wrap(token).as("clerkToken");
+    });
   });
 });
 
