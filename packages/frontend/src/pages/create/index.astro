@@ -2,6 +2,8 @@
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/header/Header.astro";
 import Main from "@/components/main/Main.astro";
+
+import { cy } from "@/utils";
 ---
 
 <Layout>
@@ -9,7 +11,13 @@ import Main from "@/components/main/Main.astro";
     <Main
         ><form action={`/api/create`} method="POST">
             <label for="content">content</label>
-            <input type="text" id="content" name="content" required />
+            <input
+                {...cy("content-field")}
+                type="text"
+                id="content"
+                name="content"
+                required
+            />
             <label for="attachment">attachment</label>
             <input type="text" id="attachment" name="attachment" />
             <button type="submit">submit</button>

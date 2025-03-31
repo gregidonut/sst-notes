@@ -1,7 +1,6 @@
 ---
 import { Note } from "src/utils/models";
 import DeleteLink from "@/components/apiCompo/deleteLink/DeleteLink.astro";
-import { cy } from "@/utils";
 import styles from "./noteList.module.css";
 
 interface Props {
@@ -10,7 +9,7 @@ interface Props {
 const { data } = Astro.props;
 ---
 
-<ol {...cy("note-list-ol")}>
+<ol>
     {
         data!.map(function (d: Note) {
             return (
