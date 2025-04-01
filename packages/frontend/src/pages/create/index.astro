@@ -20,7 +20,9 @@ import { cy } from "@/utils";
             />
             <label for="attachment">attachment</label>
             <input type="text" id="attachment" name="attachment" />
-            <button type="submit">submit</button>
+            <button {...cy("create-content-button")} type="submit"
+                >submit</button
+            >
         </form></Main
     >
 </Layout>
