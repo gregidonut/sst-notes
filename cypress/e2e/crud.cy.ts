@@ -54,5 +54,17 @@ describe("crud", () => {
       .as("noteList")
       .children()
       .should("have.length", seedLength + 1);
+    cy.get(
+      ':nth-child(1) > article > header > p > [data-cy="update-link"]',
+    ).then((el) => {
+      cy.log(el[0].innerHTML);
+    });
+  });
+
+  it("should see specific note page", () => {
+    cy.visit("/notes");
+    cy.get(
+      ':nth-child(1) > article > header > p > [data-cy="update-link"]',
+    ).click();
   });
 });

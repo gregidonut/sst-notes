@@ -3,6 +3,8 @@ import { Note } from "src/utils/models";
 import DeleteLink from "@/components/apiCompo/deleteLink/DeleteLink.astro";
 import styles from "./noteList.module.css";
 
+import { cy } from "@/utils";
+
 interface Props {
     data: Array<Note>;
 }
@@ -19,11 +21,16 @@ const { data } = Astro.props;
                             <p>
                                 <DeleteLink href={`/notes/${d.noteId}`} />{" "}
                                 {d.userId}{" "}
-                                <a href={`/notes/${d.noteId}`}>{d.noteId}</a>
+                                <a
+                                    {...cy("update-link")}
+                                    href={`/notes/${d.noteId}`}
+                                >
+                                    {d.noteId}
+                                </a>
                             </p>
                         </header>
                         <main>
-                            <p>
+                            <p {...cy("date-paragraph")}>
                                 date:{" "}
                                 {new Date(d.createdAt).toLocaleDateString()}
                                 {new Date(d.createdAt).toLocaleTimeString()}
