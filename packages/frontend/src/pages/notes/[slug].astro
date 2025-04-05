@@ -3,7 +3,7 @@ import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/header/Header.astro";
 import Main from "@/components/main/Main.astro";
 
-import { cy } from "@/utils";
+import { cy, isDevStage } from "@/utils";
 import { Note } from "src/utils/models";
 
 const { getToken } = Astro.locals.auth();
@@ -11,18 +11,14 @@ const token = await getToken();
 
 const ASTRO_API_URL = process.env.ASTRO_API_URL as string;
 let data: Array<Note>;
-try {
-    const resp = await fetch(`${ASTRO_API_URL}/notes`, {
-        method: "GET",
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    });
+const resp = await fetch(`${ASTRO_API_URL}/notes`, {
+    method: "GET",
+    headers: {
+        Authorization: `Bearer ${token}`,
+    },
+});
 
-    data = await resp.json();
-} catch (e) {
-    console.error(e);
-}
+data = await resp.json();
 
 const pages = data!.map(function (d: Note) {
     return {
@@ -43,7 +39,11 @@ if (!page) return Astro.redirect("/404");
             <header>
                 <p>
                     date: {page.createdAt}
-                    <a update-link href={`/notes/${page.noteId}`}>update</a>
+                    <a
+                        {...cy("update-link")}
+                        update-link
+                        href={`/notes/${page.noteId}`}>update</a
+                    >
                 </p>
             </header>
             <main>
@@ -51,8 +51,9 @@ if (!page) return Astro.redirect("/404");
                     {page.content}
                 </p>
             </main>
-        </section></Main
-    >
+        </section>
+    </Main>
+    {isDevStage ? <div style="display:none" id="devStage" /> : null}
 </Layout>
 
 <script>
@@ -72,7 +73,7 @@ if (!page) return Astro.redirect("/404");
             subtree: true,
         };
 
-        const callback: MutationCallback = function (mutationsList, observer) {
+        const callback: MutationCallback = function (mutationsList) {
             for (const mutation of mutationsList) {
                 if (mutation.type === "childList") {
                     mutation.addedNodes.forEach(function (node) {
@@ -120,13 +121,22 @@ if (!page) return Astro.redirect("/404");
     };
 
     observeFormInsertion();
-
+    const isDevStage = document.querySelector("#devStage") ? true : false;
     updateLink.addEventListener("click", function (event) {
         event.preventDefault();
+        console.log("~isDevStage:", isDevStage);
+        if (isDevStage) {
+            main.innerHTML = `<form update-form action="${updateLink.href}" method="PUT">
+                <label for="content">new content</label>
+                <input data-cy="update-form-content-field" type="text" id="content" name="content" value="${contentElem.innerText}">
+                <input data-cy="update-form-submit" type="submit" >;
+                </form>`;
+            return;
+        }
         main.innerHTML = `<form update-form action="${updateLink.href}" method="PUT">
-        <label for="content">new content</label>
-        <input type="text" id="content" name="content" value="${contentElem.innerText}">
-        <input type="submit" >;
-        </form>`;
+            <label for="content">new content</label>
+            <input type="text" id="content" name="content" value="${contentElem.innerText}">
+            <input type="submit" >;
+            </form>`;
     });
 </script>

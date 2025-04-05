@@ -116,16 +116,36 @@ describe("crud", () => {
     cy.get('[data-cy="content-from-list"]').first().contains(content);
   });
 
-  it("should see specific note page", () => {
+  it("should see specific note page and update note", () => {
     cy.visit("/notes");
     cy.get('[data-cy="content-from-list"]')
       .first()
+      .as("latestNote")
       .then((el) => {
         return el[0].innerText;
       })
       .then((elText) => {
         cy.get('[data-cy="note-page-link"]').first().click();
         cy.get('[data-cy="content-specific-note"]').contains(elText);
+        cy.get('[data-cy="update-link"]').click();
+        cy.get('[data-cy="update-form-content-field"]')
+          .as("contentField")
+          .then((contentFieldEl) => {
+            expect((contentFieldEl[0] as HTMLInputElement).value).to.equal(
+              elText,
+            );
+          });
+        const newContent = "betlog";
+        cy.get("@contentField").click().clear().type(newContent);
+        cy.get('[data-cy="update-form-submit"]').click();
+        cy.get('[data-cy="content-specific-note"]').contains(newContent);
+
+        cy.visit("/notes");
+        cy.get("@latestNote").contains(newContent);
       });
+  });
+
+  it("should delete note", () => {
+    cy.visit("/notes");
   });
 });
