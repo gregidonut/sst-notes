@@ -3,7 +3,11 @@
     "target": "es5",
     "lib": ["es5", "dom"],
     "sourceMap": true,
-    "types": ["cypress", "node"]
+    "types": ["cypress", "node"],
+    "baseUrl": ".",
+    "paths": {
+      "@models": ["../packages/frontend/src/utils/models"]
+    }
   },
   "include": ["**/*.ts"]
 }

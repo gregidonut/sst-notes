@@ -3,6 +3,7 @@ import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/header/Header.astro";
 import Main from "@/components/main/Main.astro";
 
+import { cy } from "@/utils";
 import { Note } from "src/utils/models";
 
 const { getToken } = Astro.locals.auth();
@@ -45,7 +46,11 @@ if (!page) return Astro.redirect("/404");
                     <a update-link href={`/notes/${page.noteId}`}>update</a>
                 </p>
             </header>
-            <main><p id="contentElem">{page.content}</p></main>
+            <main>
+                <p id="contentElem" {...cy("content-specific-note")}>
+                    {page.content}
+                </p>
+            </main>
         </section></Main
     >
 </Layout>

@@ -16,6 +16,9 @@ export default defineConfig({
         emptyDynamoDB(token: string) {
           return emptyDynamoDB(sstOutputs["ApiUrl"], token);
         },
+        getApiURL(): string {
+          return sstOutputs["ApiUrl"];
+        },
       });
       return clerkSetup({ config });
     },

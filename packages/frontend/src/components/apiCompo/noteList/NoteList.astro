@@ -22,7 +22,7 @@ const { data } = Astro.props;
                                 <DeleteLink href={`/notes/${d.noteId}`} />{" "}
                                 {d.userId}{" "}
                                 <a
-                                    {...cy("update-link")}
+                                    {...cy("note-page-link")}
                                     href={`/notes/${d.noteId}`}
                                 >
                                     {d.noteId}
@@ -31,14 +31,15 @@ const { data } = Astro.props;
                         </header>
                         <main>
                             <p {...cy("date-paragraph")}>
-                                date:{" "}
-                                {new Date(d.createdAt).toLocaleDateString()}
+                                <time datetime={d.createdAt}>
+                                    {new Date(d.createdAt).toLocaleDateString()}
+                                </time>
                                 {new Date(d.createdAt).toLocaleTimeString()}
                             </p>
                             <p>attached: {d.attachment}</p>
                             <div class={styles.content}>
                                 <h4>~content:</h4>
-                                <p>{d.content}</p>
+                                <p {...cy("content-from-list")}>{d.content}</p>
                             </div>
                         </main>
                     </article>

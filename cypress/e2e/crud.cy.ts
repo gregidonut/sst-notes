@@ -1,5 +1,6 @@
+import type { Note } from "@models";
 describe("crud", () => {
-  let seedLength = 5;
+  const seedLength = 5;
   beforeEach(() => {
     cy.signInAsUser();
     cy.visit("/notes");
@@ -44,6 +45,64 @@ describe("crud", () => {
         }
       });
   });
+
+  it("should display notes sorted by datetime", () => {
+    cy.visit("/notes");
+    // check of notelist from the api response and from the dom are sorted and match exactly
+    cy.get("@clerkToken").then((token) => {
+      cy.task("getApiURL").then((t) => {
+        cy.request({
+          method: "GET",
+          url: `${t}/notes`,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }).then((resp) => {
+          cy.get('[data-cy="note-list"] > ol')
+            .as("noteList")
+            .then((noteListEl) => {
+              const timeEls: NodeListOf<HTMLTimeElement> =
+                noteListEl[0].querySelectorAll(
+                  '[data-cy="date-paragraph"] time',
+                );
+              const dateTimes: Array<number> = Array.from(timeEls).map(
+                function (timeEl): number {
+                  const timeStringParts = timeEl
+                    .getAttribute("datetime")
+                    .split(":");
+                  return Number(
+                    timeStringParts[timeStringParts.length - 1].split("Z")[0],
+                  );
+                },
+              );
+              const sorted = [...dateTimes].sort(function (a, b) {
+                return b - a;
+              });
+
+              const apiResponse: Array<number> = (
+                JSON.parse(resp.body) as Array<Note>
+              ).map(function (respItem): number {
+                const timeStringParts = respItem.createdAt.split(":");
+                return Number(
+                  timeStringParts[timeStringParts.length - 1].split("Z")[0],
+                );
+              });
+              const tableData = dateTimes.map((dt, i) => ({
+                api: apiResponse[i],
+                dt,
+                s: sorted[i],
+              }));
+              console.table(tableData);
+
+              expect(apiResponse).to.deep.equal(dateTimes);
+              expect(apiResponse).to.deep.equal(sorted);
+              expect(dateTimes).to.deep.equal(sorted);
+            });
+        });
+      });
+    });
+  });
+
   it("should create note", () => {
     cy.visit("/create");
     const content = "pukingina mo hayup ka";
@@ -54,17 +113,19 @@ describe("crud", () => {
       .as("noteList")
       .children()
       .should("have.length", seedLength + 1);
-    cy.get(
-      ':nth-child(1) > article > header > p > [data-cy="update-link"]',
-    ).then((el) => {
-      cy.log(el[0].innerHTML);
-    });
+    cy.get('[data-cy="content-from-list"]').first().contains(content);
   });
 
   it("should see specific note page", () => {
     cy.visit("/notes");
-    cy.get(
-      ':nth-child(1) > article > header > p > [data-cy="update-link"]',
-    ).click();
+    cy.get('[data-cy="content-from-list"]')
+      .first()
+      .then((el) => {
+        return el[0].innerText;
+      })
+      .then((elText) => {
+        cy.get('[data-cy="note-page-link"]').first().click();
+        cy.get('[data-cy="content-specific-note"]').contains(elText);
+      });
   });
 });
