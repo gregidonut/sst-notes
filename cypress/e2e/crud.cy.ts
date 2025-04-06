@@ -147,5 +147,10 @@ describe("crud", () => {
 
   it("should delete note", () => {
     cy.visit("/notes");
+    cy.get('[data-cy="delete-link"]')
+      .as("deleteLinks")
+      .should("have.length", 5);
+    cy.get("@deleteLinks").first().click();
+    cy.get("@deleteLinks").should("have.length", 4);
   });
 });

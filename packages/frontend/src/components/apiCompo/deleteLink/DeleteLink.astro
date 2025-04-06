@@ -1,11 +1,12 @@
 ---
+import { cy } from "@/utils";
 interface Props {
     href: string;
 }
 const { href } = Astro.props as Props;
 ---
 
-<a delete-link href={href}> delete </a>
+<a {...cy("delete-link")} delete-link href={href}> delete </a>
 
 <script>
     const deleteLinks = document.querySelectorAll(
