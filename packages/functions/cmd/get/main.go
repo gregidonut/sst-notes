@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/gregidonut/sst-notes/packages/functions/cmd/list/db"
+	"github.com/gregidonut/sst-notes/packages/functions/cmd/utils"
 	"log"
 	"os"
 
@@ -28,13 +29,18 @@ func init() {
 
 func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	tableName := os.Getenv("NOTES_TABLE_NAME")
+	userId, err := utils.GetUserId(request)
+	if err != nil {
+		return events.APIGatewayProxyResponse{StatusCode: 500, Body: fmt.Sprintf("Error getting userId: %v", err)}, nil
+	}
+
 	noteID := request.PathParameters["id"]
 	if noteID == "" {
 		return events.APIGatewayProxyResponse{StatusCode: 400, Body: "Missing note ID"}, nil
 	}
 
 	note := db.Note{
-		UserId: "123",
+		UserId: userId,
 		NoteId: noteID,
 	}
 

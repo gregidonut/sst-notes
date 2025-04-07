@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/gregidonut/sst-notes/packages/functions/cmd/utils"
 	"os"
 	"time"
 
@@ -39,9 +40,13 @@ func handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.A
 			return events.APIGatewayProxyResponse{StatusCode: 400, Body: "Invalid request body"}, nil
 		}
 	}
+	userId, err := utils.GetUserId(event)
+	if err != nil {
+		return events.APIGatewayProxyResponse{StatusCode: 500, Body: fmt.Sprintf("Error getting userId: %v", err)}, nil
+	}
 
 	note := db.Note{
-		UserId:     "123",
+		UserId:     userId,
 		NoteId:     uuid.New().String(),
 		Content:    requestBody.Content,
 		Attachment: requestBody.Attachment,

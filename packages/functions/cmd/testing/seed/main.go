@@ -29,7 +29,10 @@ func init() {
 }
 
 func handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	notes := utils.GenerateSeedNotes()
+	notes, err := utils.GenerateSeedNotes(event)
+	if err != nil {
+		return events.APIGatewayProxyResponse{StatusCode: 500, Body: "Error creating the struct slice containing seed notes"}, nil
+	}
 
 	for i, note := range notes {
 		item, err := attributevalue.MarshalMap(note)

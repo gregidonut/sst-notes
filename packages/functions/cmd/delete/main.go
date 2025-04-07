@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/gregidonut/sst-notes/packages/functions/cmd/list/db"
+	"github.com/gregidonut/sst-notes/packages/functions/cmd/utils"
 	"log"
 	"os"
 
@@ -32,9 +33,13 @@ func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 	if noteID == "" {
 		return events.APIGatewayProxyResponse{StatusCode: 400, Body: "Missing note ID"}, nil
 	}
+	userId, err := utils.GetUserId(request)
+	if err != nil {
+		return events.APIGatewayProxyResponse{StatusCode: 500, Body: fmt.Sprintf("Error getting userId: %v", err)}, nil
+	}
 
 	note := db.Note{
-		UserId: "123",
+		UserId: userId,
 		NoteId: noteID,
 	}
 

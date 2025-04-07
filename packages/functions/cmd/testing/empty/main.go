@@ -12,6 +12,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/gregidonut/sst-notes/packages/functions/cmd/list/db"
 	"github.com/gregidonut/sst-notes/packages/functions/cmd/testing/empty/steps"
+	"github.com/gregidonut/sst-notes/packages/functions/cmd/utils"
 	"log"
 	"os"
 )
@@ -29,11 +30,15 @@ func init() {
 func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	tableName := os.Getenv("NOTES_TABLE_NAME")
 
+	userId, err := utils.GetUserId(request)
+	if err != nil {
+		return events.APIGatewayProxyResponse{StatusCode: 500, Body: fmt.Sprintf("Error getting userId: %v", err)}, nil
+	}
 	params := &dynamodb.QueryInput{
 		TableName:              aws.String(tableName), // Replace with your actual table name
 		KeyConditionExpression: aws.String("userId = :userId"),
 		ExpressionAttributeValues: map[string]types.AttributeValue{
-			":userId": &types.AttributeValueMemberS{Value: "123"},
+			":userId": &types.AttributeValueMemberS{Value: userId},
 		},
 	}
 
