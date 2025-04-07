@@ -8,7 +8,10 @@ import { cy } from "@/utils";
 interface Props {
     data: Array<Note>;
 }
+
 const { data } = Astro.props;
+
+const { user } = Astro.locals;
 ---
 
 <ol>
@@ -20,7 +23,7 @@ const { data } = Astro.props;
                         <header>
                             <p>
                                 <DeleteLink href={`/notes/${d.noteId}`} />{" "}
-                                {d.userId}{" "}
+                                {user.username}{" "}
                                 <a
                                     {...cy("note-page-link")}
                                     href={`/notes/${d.noteId}`}

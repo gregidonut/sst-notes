@@ -9,12 +9,14 @@ const apiURL = process.env.ASTRO_API_URL;
 const clerkSignInURL = process.env.CLERK_SIGN_IN_URL;
 const { getToken } = Astro.locals.auth();
 const token = await getToken();
+const { user } = Astro.locals;
 ---
 
 <Layout>
     <Header />
     <Main
         ><article>
+            <p>welcom back! <strong>{user.username}</strong></p>
             <p>stage: <code>{stage}</code></p>
             <p>bucket: <code>{bucket}</code></p>
             <p>apiURL: <code>{apiURL}</code></p>
