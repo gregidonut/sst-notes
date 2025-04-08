@@ -1,5 +1,5 @@
 declare namespace Cypress {
   interface Chainable {
-    signInAsUser(): Chainable;
+    signInAsUser(conf?: { user2: boolean }): Chainable;
   }
 }

@@ -40,21 +40,26 @@ import { addClerkCommands } from "@clerk/testing/cypress";
 addClerkCommands({ Cypress, cy });
 
 import { setupClerkTestingToken } from "@clerk/testing/cypress";
-Cypress.Commands.add("signInAsUser", () => {
-  setupClerkTestingToken();
+Cypress.Commands.add(
+  "signInAsUser",
+  function ({ user2 }: { user2: boolean } = { user2: false }) {
+    setupClerkTestingToken();
 
-  cy.viewport("iphone-6");
-  cy.visit("/sign-in");
-  cy.clerkSignIn({
-    strategy: "password",
-    identifier: Cypress.env("test_user"),
-    password: Cypress.env("test_password"),
-  });
-  cy.window().then((window) => {
-    window.Clerk.session.getToken().then((token) => {
-      cy.wrap(token).as("clerkToken");
+    cy.viewport("iphone-6");
+    cy.visit("/sign-in");
+    cy.clerkSignIn({
+      strategy: "password",
+      identifier: user2 ? Cypress.env("test_user2") : Cypress.env("test_user"),
+      password: user2
+        ? Cypress.env("test_password2")
+        : Cypress.env("test_password"),
     });
-  });
-});
+    cy.window().then((window) => {
+      window.Clerk.session.getToken().then((token) => {
+        cy.wrap(token).as("clerkToken");
+      });
+    });
+  },
+);
 
 export {};

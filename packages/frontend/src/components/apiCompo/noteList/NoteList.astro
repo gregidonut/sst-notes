@@ -23,7 +23,7 @@ const { user } = Astro.locals;
                         <header>
                             <p>
                                 <DeleteLink href={`/notes/${d.noteId}`} />{" "}
-                                {user.username}{" "}
+                                <span {...cy("username")}>{user.username}</span>
                                 <a
                                     {...cy("note-page-link")}
                                     href={`/notes/${d.noteId}`}
