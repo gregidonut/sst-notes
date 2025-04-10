@@ -59,40 +59,33 @@ func handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.A
 		return events.APIGatewayProxyResponse{StatusCode: 500, Body: "Error unmarshaling json from response"}, nil
 	}
 
-	parseErr := struct {
-		occured bool
-		err     error
-	}{
-		occured: false,
-		err:     nil,
-	}
-	sort.Slice(notes, func(i, j int) bool {
-		parsedTimei, err := time.Parse(time.RFC3339Nano, notes[i].CreatedAt)
-		if err != nil {
-			parseErr.occured = true
-			parseErr.err = err
-		}
-		parsedTimej, err := time.Parse(time.RFC3339Nano, notes[j].CreatedAt)
-		if err != nil {
-			parseErr.occured = true
-			parseErr.err = err
-		}
-		if parseErr.occured {
-			return false
-		}
-		return parsedTimei.After(parsedTimej)
-	})
-	if parseErr.occured {
-		return events.APIGatewayProxyResponse{
-			StatusCode: 500, Body: "Error parsing time from note struct in from dynamodb",
-		}, nil
+	type sortableNote struct {
+		note      db.Note
+		createdAt time.Time
 	}
 
-	payload, err := json.Marshal(notes)
+	sortableNotes := []sortableNote{}
+	for _, n := range items {
+		parsedTime, err := time.Parse(time.RFC3339Nano, n.CreatedAt)
+		if err != nil {
+			return events.APIGatewayProxyResponse{StatusCode: 500, Body: "Error parsing time from createdAt string"}, nil
+		}
+		sortableNotes = append(sortableNotes, sortableNote{n, parsedTime})
+	}
+	sort.Slice(sortableNotes, func(i, j int) bool {
+		return sortableNotes[i].createdAt.After(sortableNotes[j].createdAt)
+	})
+
+	// Extract sorted notes
+	sortedNotes := []db.Note{}
+	for _, sn := range sortableNotes {
+		sortedNotes = append(sortedNotes, sn.note)
+	}
+
+	payload, err := json.Marshal(sortedNotes)
 	if err != nil {
 		return events.APIGatewayProxyResponse{StatusCode: 500, Body: "Error marshaling response"}, nil
 	}
-	//}}
 
 	return events.APIGatewayProxyResponse{StatusCode: 200, Body: string(payload)}, nil
 }
