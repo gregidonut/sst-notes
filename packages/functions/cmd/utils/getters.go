@@ -2,11 +2,11 @@ package utils
 
 import (
 	"encoding/json"
+
 	"github.com/aws/aws-lambda-go/events"
 )
 
 func GetUserId(event events.APIGatewayProxyRequest) (string, error) {
-
 	type Jwt struct {
 		Claims map[string]interface{} `json:"claims"`
 	}

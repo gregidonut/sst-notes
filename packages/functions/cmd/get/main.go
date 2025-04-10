@@ -4,31 +4,18 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/gregidonut/sst-notes/packages/functions/cmd/list/db"
 	"github.com/gregidonut/sst-notes/packages/functions/cmd/utils"
-	"log"
-	"os"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 )
 
-var dynamoDbClient *dynamodb.Client
-
-func init() {
-	cfg, err := config.LoadDefaultConfig(context.TODO())
-	if err != nil {
-		log.Fatalf("unable to load SDK config, %v", err)
-	}
-	dynamoDbClient = dynamodb.NewFromConfig(cfg)
-}
-
 func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	tableName := os.Getenv("NOTES_TABLE_NAME")
 	userId, err := utils.GetUserId(request)
 	if err != nil {
 		return events.APIGatewayProxyResponse{StatusCode: 500, Body: fmt.Sprintf("Error getting userId: %v", err)}, nil
@@ -52,8 +39,13 @@ func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 	}
 
 	params := &dynamodb.GetItemInput{
-		TableName: aws.String(tableName),
+		TableName: aws.String(utils.DYNAMODB_TABLE_NAME),
 		Key:       item,
+	}
+
+	dynamoDbClient, err := utils.InitDynamo()
+	if err != nil {
+		return events.APIGatewayProxyResponse{StatusCode: 500, Body: fmt.Sprintf("Error initializing Dynanmo config: %v", err)}, nil
 	}
 
 	result, err := dynamoDbClient.GetItem(ctx, params)

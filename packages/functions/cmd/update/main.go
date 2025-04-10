@@ -4,31 +4,18 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/gregidonut/sst-notes/packages/functions/cmd/list/db"
 	"github.com/gregidonut/sst-notes/packages/functions/cmd/utils"
-	"log"
-	"os"
 )
 
-var dynamoDbClient *dynamodb.Client
-
-func init() {
-	cfg, err := config.LoadDefaultConfig(context.TODO())
-	if err != nil {
-		log.Fatalf("unable to load SDK config, %v", err)
-	}
-	dynamoDbClient = dynamodb.NewFromConfig(cfg)
-}
-
 func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	tableName := os.Getenv("NOTES_TABLE_NAME")
 	noteID := request.PathParameters["id"]
 	var requestBody db.Note
 	if request.Body != "" {
@@ -51,7 +38,6 @@ func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 
 	item, err := attributevalue.MarshalMap(note)
 	if err != nil {
-
 		return events.APIGatewayProxyResponse{StatusCode: 500, Body: "Error creating note"}, nil
 	}
 
@@ -68,10 +54,15 @@ func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 	}
 
 	params := &dynamodb.UpdateItemInput{
-		TableName:                 aws.String(tableName),
+		TableName:                 aws.String(utils.DYNAMODB_TABLE_NAME),
 		Key:                       key,
 		UpdateExpression:          aws.String(updateExpression),
 		ExpressionAttributeValues: expressionValues,
+	}
+
+	dynamoDbClient, err := utils.InitDynamo()
+	if err != nil {
+		return events.APIGatewayProxyResponse{StatusCode: 500, Body: fmt.Sprintf("Error initializing Dynanmo config: %v", err)}, nil
 	}
 
 	result, err := dynamoDbClient.UpdateItem(ctx, params)
